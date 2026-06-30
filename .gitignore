@@ -1,0 +1,43 @@
+## Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+.venv/
+venv/
+env/
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+## Secrets — NEVER commit
+.env
+**/.env
+.env.local
+*.key
+*.pem
+
+## Node
+node_modules/
+dist/
+build/
+.next/
+.cache/
+
+## OS
+.DS_Store
+Thumbs.db
+
+## Editor
+.vscode/
+.idea/
+*.swp
+
+## App-specific
+backend/uploads/
+backend/extractor_cache/
+*.log
+backend/.env.example
+frontend/.env.example

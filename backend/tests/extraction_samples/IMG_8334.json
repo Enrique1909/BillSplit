@@ -1,0 +1,157 @@
+{
+  "schema_version": 1,
+  "source_image": "/sessions/funny-youthful-clarke/mnt/outputs/bills_jpg/IMG_8334.jpg",
+  "currency": "INR",
+  "restaurant": {
+    "name": "HOTEL HARIPRASAD",
+    "address": "MILITARY ROAD, MAROL, ANDHERI EAST, MUMBAI - 400 059",
+    "gstin": "27ANGPS8943K1Z7"
+  },
+  "meta": {
+    "bill_no": "22546",
+    "date": "23-09-25",
+    "pax": null,
+    "order_type": "dine_in",
+    "platform": "direct"
+  },
+  "sections": [
+    {
+      "id": "s0",
+      "name": "Items",
+      "default_tax_class": "food",
+      "items": [
+        {
+          "id": "s0_i0",
+          "parent_id": null,
+          "name": "MINERAL WATER 1 LTR",
+          "qty": 1.0,
+          "unit_price": 40.0,
+          "line_total": 40.0,
+          "is_complimentary": false,
+          "tax_class": "non_alcoholic_beverage",
+          "raw_text": "MINERAL WATER 1 LTR 1 40.00 40.00"
+        },
+        {
+          "id": "s0_i1",
+          "parent_id": null,
+          "name": "SCHEZWAN SOUCE",
+          "qty": 1.0,
+          "unit_price": 30.0,
+          "line_total": 30.0,
+          "is_complimentary": false,
+          "tax_class": "food",
+          "raw_text": "SCHEZWAN SOUCE 1 30.00 30.00"
+        },
+        {
+          "id": "s0_i2",
+          "parent_id": null,
+          "name": "SNACKS",
+          "qty": 2.0,
+          "unit_price": 20.0,
+          "line_total": 40.0,
+          "is_complimentary": false,
+          "tax_class": "food",
+          "raw_text": "SNACKS 2 20.00 40.00"
+        },
+        {
+          "id": "s0_i3",
+          "parent_id": null,
+          "name": "SNACKS SPL",
+          "qty": 1.0,
+          "unit_price": 30.0,
+          "line_total": 30.0,
+          "is_complimentary": false,
+          "tax_class": "food",
+          "raw_text": "SNACKS SPL 1 30.00 30.00"
+        },
+        {
+          "id": "s0_i4",
+          "parent_id": null,
+          "name": "SOFT DRINKS 330ML",
+          "qty": 2.0,
+          "unit_price": 50.0,
+          "line_total": 100.0,
+          "is_complimentary": false,
+          "tax_class": "non_alcoholic_beverage",
+          "raw_text": "SOFT DRINKS 330ML 2 50.00 100.00"
+        }
+      ],
+      "subtotal": 240.0
+    },
+    {
+      "id": "s1",
+      "name": "Items",
+      "default_tax_class": "alcohol",
+      "items": [
+        {
+          "id": "s1_i0",
+          "parent_id": null,
+          "name": "BLUE RIBAND 180ML",
+          "qty": 1.0,
+          "unit_price": 375.0,
+          "line_total": 375.0,
+          "is_complimentary": false,
+          "tax_class": "alcohol",
+          "raw_text": "BLUE RIBAND 180ML 1 375.00 375.00"
+        },
+        {
+          "id": "s1_i1",
+          "parent_id": null,
+          "name": "K F ULTRA 650ML",
+          "qty": 6.0,
+          "unit_price": 400.0,
+          "line_total": 2400.0,
+          "is_complimentary": false,
+          "tax_class": "alcohol",
+          "raw_text": "K F ULTRA 650ML 6 400.00 2400.00"
+        }
+      ],
+      "subtotal": 2775.0
+    }
+  ],
+  "taxes": [
+    {
+      "id": "t0",
+      "label": "CGST",
+      "rate_pct": 2.5,
+      "amount": 6.0,
+      "applies_to_classes": [
+        "food",
+        "non_alcoholic_beverage"
+      ],
+      "includes_service_charge_in_basis": false
+    },
+    {
+      "id": "t1",
+      "label": "SGST",
+      "rate_pct": 2.5,
+      "amount": 6.0,
+      "applies_to_classes": [
+        "food",
+        "non_alcoholic_beverage"
+      ],
+      "includes_service_charge_in_basis": false
+    },
+    {
+      "id": "t2",
+      "label": "MVAT",
+      "rate_pct": 10.0,
+      "amount": 277.5,
+      "applies_to_classes": [
+        "alcohol"
+      ],
+      "includes_service_charge_in_basis": false
+    }
+  ],
+  "bill_level_charges": [],
+  "discounts": [],
+  "round_off": 0.0,
+  "grand_total": 3305.0,
+  "reconciliation": {
+    "computed_total": 3304.5,
+    "delta": 0.5,
+    "notes": [
+      "The bill shows two separate subtotals and tax calculations. The first subtotal (240.0) + CGST (6.0) + SGST (6.0) = 252.0. The second subtotal (2775.0) + MVAT (277.5) = 3052.5. The sum of these two net amounts is 252.0 + 3052.5 = 3304.5. The grand total is 3305.0, resulting in a delta of 0.5, likely due to rounding."
+    ]
+  }
+}

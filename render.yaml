@@ -1,0 +1,29 @@
+# Render Blueprint for the BillSplit backend — native Python (no Docker).
+# In Render: New → Blueprint → pick this repo, then fill the secret env vars
+# (marked sync:false) in the dashboard.
+services:
+  - type: web
+    name: billsplit-api
+    runtime: python
+    plan: free
+    rootDir: backend
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /api/health
+    envVars:
+      - key: PYTHON_VERSION
+        value: "3.11.9"
+      # Gemini (paid OCR) — get a free key at https://aistudio.google.com/
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: GEMINI_MODEL
+        value: gemini-2.5-flash
+      # Auth — must match the frontend's VITE_GOOGLE_CLIENT_ID (token audience)
+      - key: GOOGLE_CLIENT_ID
+        sync: false
+      # CORS — set to your Vercel frontend URL, e.g. https://billsplit.vercel.app
+      - key: ALLOWED_ORIGINS
+        sync: false
+      # Cost control: paid extractions per user per day
+      - key: EXTRACT_DAILY_LIMIT
+        value: "25"

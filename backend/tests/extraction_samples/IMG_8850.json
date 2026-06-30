@@ -1,0 +1,115 @@
+{
+  "schema_version": 1,
+  "source_image": "/sessions/funny-youthful-clarke/mnt/outputs/bills_jpg/IMG_8850.jpg",
+  "currency": "INR",
+  "restaurant": {
+    "name": null,
+    "address": null,
+    "gstin": "07AAAFH3082K1ZE"
+  },
+  "meta": {
+    "bill_no": "181225",
+    "date": "18/10/25",
+    "pax": null,
+    "order_type": "dine_in",
+    "platform": "direct"
+  },
+  "sections": [
+    {
+      "id": "s0",
+      "name": "Items",
+      "default_tax_class": "food",
+      "items": [
+        {
+          "id": "s0_i0",
+          "parent_id": null,
+          "name": "Mutton Platter Tandoori",
+          "qty": 1.0,
+          "unit_price": 1850.0,
+          "line_total": 1850.0,
+          "is_complimentary": false,
+          "tax_class": "food",
+          "raw_text": "1 Mutton Platter Tandoori 1 1850.001850.00"
+        },
+        {
+          "id": "s0_i1",
+          "parent_id": null,
+          "name": "Butter Chicken 5 Pcs Chicken Tikka",
+          "qty": 1.0,
+          "unit_price": 695.0,
+          "line_total": 695.0,
+          "is_complimentary": false,
+          "tax_class": "food",
+          "raw_text": "2 Butter Chicken 5 Chicken Tikka Pcs 1 695.00 695.00"
+        },
+        {
+          "id": "s0_i2",
+          "parent_id": null,
+          "name": "Dal Makhani",
+          "qty": 1.0,
+          "unit_price": 725.0,
+          "line_total": 725.0,
+          "is_complimentary": false,
+          "tax_class": "food",
+          "raw_text": "3 Dal Makhani 1 725.00 725.00"
+        },
+        {
+          "id": "s0_i3",
+          "parent_id": null,
+          "name": "Plain Rice (Full)",
+          "qty": 1.0,
+          "unit_price": 575.0,
+          "line_total": 575.0,
+          "is_complimentary": false,
+          "tax_class": "food",
+          "raw_text": "4 Plain Rice (Full) 1 575.00 575.00"
+        },
+        {
+          "id": "s0_i4",
+          "parent_id": null,
+          "name": "Garlic Naan",
+          "qty": 2.0,
+          "unit_price": 350.0,
+          "line_total": 700.0,
+          "is_complimentary": false,
+          "tax_class": "food",
+          "raw_text": "5 Garlic Naan 2 350.00 700.00"
+        }
+      ],
+      "subtotal": 4545.0
+    }
+  ],
+  "taxes": [
+    {
+      "id": "t0",
+      "label": "SGST",
+      "rate_pct": 2.5,
+      "amount": 113.63,
+      "applies_to_classes": [
+        "food",
+        "non_alcoholic_beverage"
+      ],
+      "includes_service_charge_in_basis": false
+    },
+    {
+      "id": "t1",
+      "label": "CGST",
+      "rate_pct": 2.5,
+      "amount": 113.63,
+      "applies_to_classes": [
+        "food",
+        "non_alcoholic_beverage"
+      ],
+      "includes_service_charge_in_basis": false
+    }
+  ],
+  "bill_level_charges": [],
+  "discounts": [],
+  "round_off": -0.26,
+  "grand_total": 4772.0,
+  "reconciliation": {
+    "computed_total": 4772.0,
+    "delta": 0.0,
+    "notes": []
+  }
+}

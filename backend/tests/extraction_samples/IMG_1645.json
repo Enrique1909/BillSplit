@@ -1,0 +1,159 @@
+{
+  "schema_version": 1,
+  "source_image": "/sessions/funny-youthful-clarke/mnt/outputs/bills_jpg/IMG_1645.jpg",
+  "currency": "INR",
+  "restaurant": {
+    "name": "BAD BOY PIZZA",
+    "address": null,
+    "gstin": "27AALCG7865R1ZF"
+  },
+  "meta": {
+    "bill_no": "8014",
+    "date": "01/04/26",
+    "pax": 4,
+    "order_type": "dine_in",
+    "platform": "direct"
+  },
+  "sections": [
+    {
+      "id": "s0",
+      "name": "Items",
+      "default_tax_class": "food",
+      "items": [
+        {
+          "id": "s0_i0",
+          "parent_id": null,
+          "name": "Cheese Garlic Bread - With Cheese Butter Masala",
+          "qty": 1.0,
+          "unit_price": 395.0,
+          "line_total": 395.0,
+          "is_complimentary": false,
+          "tax_class": "food",
+          "raw_text": "Cheese Garlic\nBread - With\nCheese Butter\nMasala\n1 395.0 395.0"
+        },
+        {
+          "id": "s0_i1",
+          "parent_id": null,
+          "name": "Butter Chicken",
+          "qty": 1.0,
+          "unit_price": 155.0,
+          "line_total": 155.0,
+          "is_complimentary": false,
+          "tax_class": "food",
+          "raw_text": "Butter Chicken\n1 155.0 155.0"
+        },
+        {
+          "id": "s0_i2",
+          "parent_id": null,
+          "name": "Half N Half",
+          "qty": 1.0,
+          "unit_price": 765.0,
+          "line_total": 765.0,
+          "is_complimentary": false,
+          "tax_class": "food",
+          "raw_text": "Half N Half\n1 765.0 765.0"
+        },
+        {
+          "id": "s0_i3",
+          "parent_id": null,
+          "name": "Half N Half",
+          "qty": 1.0,
+          "unit_price": 840.0,
+          "line_total": 840.0,
+          "is_complimentary": false,
+          "tax_class": "food",
+          "raw_text": "Half N Half\n1 840.0 840.0"
+        },
+        {
+          "id": "s0_i4",
+          "parent_id": null,
+          "name": "Half N Half",
+          "qty": 1.0,
+          "unit_price": 810.0,
+          "line_total": 810.0,
+          "is_complimentary": false,
+          "tax_class": "food",
+          "raw_text": "Half N Half\n1 810.0 810.0"
+        },
+        {
+          "id": "s0_i5",
+          "parent_id": null,
+          "name": "Onion Rings",
+          "qty": 1.0,
+          "unit_price": 225.0,
+          "line_total": 225.0,
+          "is_complimentary": false,
+          "tax_class": "food",
+          "raw_text": "Onion Rings\n1 225.0 225.0"
+        },
+        {
+          "id": "s0_i6",
+          "parent_id": null,
+          "name": "Jugnu Water Bottle 500ml",
+          "qty": 3.0,
+          "unit_price": 19.1,
+          "line_total": 57.3,
+          "is_complimentary": false,
+          "tax_class": "non_alcoholic_beverage",
+          "raw_text": "Jugnu Water Bottle\n500ml\n3 19.1 57.3"
+        },
+        {
+          "id": "s0_i7",
+          "parent_id": null,
+          "name": "Sriracha Truffle",
+          "qty": 1.0,
+          "unit_price": 95.0,
+          "line_total": 95.0,
+          "is_complimentary": false,
+          "tax_class": "food",
+          "raw_text": "Sriracha Truffle\n1 95.0 95.0"
+        },
+        {
+          "id": "s0_i8",
+          "parent_id": null,
+          "name": "Paprika Pomodoro Dip",
+          "qty": 1.0,
+          "unit_price": 45.0,
+          "line_total": 45.0,
+          "is_complimentary": false,
+          "tax_class": "food",
+          "raw_text": "Paprika Pomodoro\nDip\n1 45.0 45.0"
+        },
+        {
+          "id": "s0_i9",
+          "parent_id": null,
+          "name": "Fried Oreos (5 Pcs) With Dark Chocolate Sea Salt Dip",
+          "qty": 1.0,
+          "unit_price": 175.0,
+          "line_total": 175.0,
+          "is_complimentary": false,
+          "tax_class": "food",
+          "raw_text": "Fried Oreos (5 Pcs)\nWith Dark\nChocolate Sea Salt\nDip\n1 175.0 175.0"
+        }
+      ],
+      "subtotal": 3510.0
+    }
+  ],
+  "taxes": [
+    {
+      "id": "t0",
+      "label": "SGST",
+      "rate_pct": 2.5,
+      "amount": 73.6,
+      "applies_to_classes": [
+        "food",
+        "non_alcoholic_beverage"
+      ],
+      "includes_service_charge_in_basis": false
+    }
+  ],
+  "bill_level_charges": [],
+  "discounts": [],
+  "round_off": 0.5,
+  "grand_total": 3090.0,
+  "reconciliation": {
+    "computed_total": 3584.1,
+    "delta": -494.1,
+    "notes": []
+  }
+}

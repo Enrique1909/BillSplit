@@ -1,0 +1,199 @@
+{
+  "schema_version": 1,
+  "source_image": "/sessions/funny-youthful-clarke/mnt/outputs/bills_jpg/IMG_0822.jpg",
+  "currency": "INR",
+  "restaurant": {
+    "name": "Old Street Cafe & bar",
+    "address": "95, Fernades villa, hill road, Near St Andrews church, Ranwar, Bandra west, Mumbai 400050",
+    "gstin": "27AANPI6300G1ZV"
+  },
+  "meta": {
+    "bill_no": "63163",
+    "date": "2026-02-08",
+    "pax": null,
+    "order_type": "dine_in",
+    "platform": "direct"
+  },
+  "sections": [
+    {
+      "id": "s0",
+      "name": "Food Menu",
+      "default_tax_class": "food",
+      "items": [
+        {
+          "id": "s0_i0",
+          "parent_id": null,
+          "name": "Chicken Peri Peri",
+          "qty": 1.0,
+          "unit_price": 330.0,
+          "line_total": 330.0,
+          "is_complimentary": false,
+          "tax_class": "food",
+          "raw_text": "Chicken Peri Peri 1 330.00 330.00"
+        },
+        {
+          "id": "s0_i1",
+          "parent_id": null,
+          "name": "Prawns Koliwada",
+          "qty": 4.0,
+          "unit_price": 390.0,
+          "line_total": 1560.0,
+          "is_complimentary": false,
+          "tax_class": "food",
+          "raw_text": "Prawns Koliwada 4 390.001560.00"
+        },
+        {
+          "id": "s0_i2",
+          "parent_id": null,
+          "name": "Chilly Chicken",
+          "qty": 1.0,
+          "unit_price": 330.0,
+          "line_total": 330.0,
+          "is_complimentary": false,
+          "tax_class": "food",
+          "raw_text": "Chilly Chicken 1 330.00 330.00"
+        }
+      ],
+      "subtotal": 2220.0
+    },
+    {
+      "id": "s1",
+      "name": "Bar Menu",
+      "default_tax_class": "alcohol",
+      "items": [
+        {
+          "id": "s1_i0",
+          "parent_id": null,
+          "name": "Packaged Water",
+          "qty": 4.0,
+          "unit_price": 45.0,
+          "line_total": 180.0,
+          "is_complimentary": false,
+          "tax_class": "non_alcoholic_beverage",
+          "raw_text": "Packaged Water 4 45.00 180.00"
+        },
+        {
+          "id": "s1_i1",
+          "parent_id": null,
+          "name": "Redbull",
+          "qty": 1.0,
+          "unit_price": 200.0,
+          "line_total": 200.0,
+          "is_complimentary": false,
+          "tax_class": "non_alcoholic_beverage",
+          "raw_text": "Redbull 1 200.00 200.00"
+        },
+        {
+          "id": "s1_i2",
+          "parent_id": null,
+          "name": "Budweiser Premium (330ML (PINT))",
+          "qty": 1.0,
+          "unit_price": 260.0,
+          "line_total": 260.0,
+          "is_complimentary": false,
+          "tax_class": "alcohol",
+          "raw_text": "Budweiser Premium (330ML (PINT)) 1 260.00 260.00"
+        },
+        {
+          "id": "s1_i3",
+          "parent_id": null,
+          "name": "White White Sangria",
+          "qty": 1.0,
+          "unit_price": 370.0,
+          "line_total": 370.0,
+          "is_complimentary": false,
+          "tax_class": "alcohol",
+          "raw_text": "White White Sangria 1 370.00 370.00"
+        },
+        {
+          "id": "s1_i4",
+          "parent_id": null,
+          "name": "Jal Jeera Gin & Tonic",
+          "qty": 3.0,
+          "unit_price": 420.0,
+          "line_total": 1260.0,
+          "is_complimentary": false,
+          "tax_class": "alcohol",
+          "raw_text": "Jal Jeera Gin & Tonic 3 420.001260.00"
+        },
+        {
+          "id": "s1_i5",
+          "parent_id": null,
+          "name": "Stranger And Sons (180ML)",
+          "qty": 4.0,
+          "unit_price": 1350.0,
+          "line_total": 5400.0,
+          "is_complimentary": false,
+          "tax_class": "alcohol",
+          "raw_text": "Stranger And Sons (180ML) 4 1350.005400.00"
+        },
+        {
+          "id": "s1_i6",
+          "parent_id": null,
+          "name": "Tonic Water",
+          "qty": 3.0,
+          "unit_price": 110.0,
+          "line_total": 330.0,
+          "is_complimentary": false,
+          "tax_class": "non_alcoholic_beverage",
+          "raw_text": "Tonic Water 3 110.00 330.00"
+        }
+      ],
+      "subtotal": 8000.0
+    }
+  ],
+  "taxes": [
+    {
+      "id": "t0",
+      "label": "CGST",
+      "rate_pct": 2.5,
+      "amount": 86.03,
+      "applies_to_classes": [
+        "food",
+        "non_alcoholic_beverage"
+      ],
+      "includes_service_charge_in_basis": true
+    },
+    {
+      "id": "t1",
+      "label": "SGST",
+      "rate_pct": 2.5,
+      "amount": 86.03,
+      "applies_to_classes": [
+        "food",
+        "non_alcoholic_beverage"
+      ],
+      "includes_service_charge_in_basis": true
+    },
+    {
+      "id": "t2",
+      "label": "VAT",
+      "rate_pct": 10.0,
+      "amount": 729.0,
+      "applies_to_classes": [
+        "alcohol"
+      ],
+      "includes_service_charge_in_basis": false
+    }
+  ],
+  "bill_level_charges": [
+    {
+      "id": "c0",
+      "label": "Service charge",
+      "kind": "service_charge",
+      "rate_pct": 5.0,
+      "amount": 511.0,
+      "is_voluntary": true,
+      "applies_to_section_ids": "all",
+      "is_taxable": true
+    }
+  ],
+  "discounts": [],
+  "round_off": -0.06,
+  "grand_total": 11632.0,
+  "reconciliation": {
+    "computed_total": 11632.0,
+    "delta": 0.0,
+    "notes": []
+  }
+}

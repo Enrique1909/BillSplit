@@ -1,0 +1,147 @@
+{
+  "schema_version": 1,
+  "source_image": "/sessions/funny-youthful-clarke/mnt/outputs/bills_jpg/IMG_8252.jpg",
+  "currency": "INR",
+  "restaurant": {
+    "name": "AVDI RESTAURANTS INDIA PVT LTD",
+    "address": "Ground Floor, Phoenix Marketcity Kurla, LBS Marg, Kurla West, Mumbai, Maharashtra 400070",
+    "gstin": "27AANCA3183H1Z8"
+  },
+  "meta": {
+    "bill_no": "7400377244",
+    "date": "2025-09-18",
+    "pax": 2,
+    "order_type": "dine_in",
+    "platform": "direct"
+  },
+  "sections": [
+    {
+      "id": "s0",
+      "name": "Items",
+      "default_tax_class": "food",
+      "items": [
+        {
+          "id": "s0_i0",
+          "parent_id": null,
+          "name": "MEAT SPECIAL PIZZA AUG & SEP 2025",
+          "qty": 1.0,
+          "unit_price": 929.0,
+          "line_total": 929.0,
+          "is_complimentary": false,
+          "tax_class": "food",
+          "raw_text": "MEAT SPECIAL PIZZA 1 929 929 AUG & SEP 2025"
+        },
+        {
+          "id": "s0_i1",
+          "parent_id": null,
+          "name": "PIZZA 2 - MARGHERITA (12 INCH)",
+          "qty": 1.0,
+          "unit_price": 499.0,
+          "line_total": 499.0,
+          "is_complimentary": false,
+          "tax_class": "food",
+          "raw_text": "PIZZA 2 - MARGHERITA 1 499 499 (12 INCH)"
+        },
+        {
+          "id": "s0_i2",
+          "parent_id": null,
+          "name": "Buratta",
+          "qty": 1.0,
+          "unit_price": 250.0,
+          "line_total": 250.0,
+          "is_complimentary": false,
+          "tax_class": "food",
+          "raw_text": "Buratta 1 250 250"
+        },
+        {
+          "id": "s0_i3",
+          "parent_id": null,
+          "name": "MS FRATELLI SANJEVESE RED GLASS",
+          "qty": 2.0,
+          "unit_price": 549.0,
+          "line_total": 1098.0,
+          "is_complimentary": false,
+          "tax_class": "alcohol",
+          "raw_text": "MS FRATELLI 2 549 1098 SANJEVESE RED GLASS"
+        },
+        {
+          "id": "s0_i4",
+          "parent_id": null,
+          "name": "BURATTA",
+          "qty": 1.0,
+          "unit_price": 250.0,
+          "line_total": 250.0,
+          "is_complimentary": false,
+          "tax_class": "food",
+          "raw_text": "BURATTA 1 250 250"
+        },
+        {
+          "id": "s0_i5",
+          "parent_id": null,
+          "name": "NONNA'S FAMOUS TIRAMISU",
+          "qty": 1.0,
+          "unit_price": 429.0,
+          "line_total": 429.0,
+          "is_complimentary": false,
+          "tax_class": "food",
+          "raw_text": "NONNA'S FAMOUS 1 429 429 TIRAMISU"
+        }
+      ],
+      "subtotal": 3455.0
+    }
+  ],
+  "taxes": [
+    {
+      "id": "t0",
+      "label": "CGST",
+      "rate_pct": 2.5,
+      "amount": 64.82,
+      "applies_to_classes": [
+        "food",
+        "non_alcoholic_beverage"
+      ],
+      "includes_service_charge_in_basis": true
+    },
+    {
+      "id": "t1",
+      "label": "SGST",
+      "rate_pct": 2.5,
+      "amount": 64.82,
+      "applies_to_classes": [
+        "food",
+        "non_alcoholic_beverage"
+      ],
+      "includes_service_charge_in_basis": true
+    },
+    {
+      "id": "t2",
+      "label": "VAT",
+      "rate_pct": 10.0,
+      "amount": 120.48,
+      "applies_to_classes": [
+        "alcohol"
+      ],
+      "includes_service_charge_in_basis": true
+    }
+  ],
+  "bill_level_charges": [
+    {
+      "id": "c0",
+      "label": "Service Charge",
+      "kind": "service_charge",
+      "rate_pct": 10.0,
+      "amount": 345.5,
+      "is_voluntary": true,
+      "applies_to_section_ids": "all",
+      "is_taxable": true
+    }
+  ],
+  "discounts": [],
+  "round_off": -0.92,
+  "grand_total": 4051.0,
+  "reconciliation": {
+    "computed_total": 4049.7,
+    "delta": 1.3,
+    "notes": []
+  }
+}

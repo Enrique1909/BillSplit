@@ -1,0 +1,233 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ============================================================================
+   Design tokens — "Modern fintech" (light + dark)
+   All values are space-separated R G B triples so Tailwind's
+   `rgb(var(--x) / <alpha-value>)` opacity syntax works everywhere.
+   ============================================================================ */
+:root {
+  --bg: 246 248 250; /* cool light canvas */
+  --surface: 255 255 255; /* cards */
+  --surface-2: 241 244 247; /* subtle fills, inputs */
+  --line: 226 232 240; /* hairline borders */
+  --line-strong: 203 213 225; /* hover / emphasis borders */
+  --fg: 11 15 20; /* primary text — near-black */
+  --fg-muted: 90 102 117; /* secondary text */
+  --fg-subtle: 138 149 163; /* tertiary / placeholder */
+
+  --accent: 5 150 105; /* emerald-600 — legible green on light */
+  --accent-hover: 4 120 87; /* emerald-700 */
+  --accent-fg: 255 255 255; /* text on accent */
+  --accent-soft: 209 250 229; /* emerald-100 tint */
+
+  --danger: 225 29 72; /* rose-600 */
+  --danger-soft: 255 228 230; /* rose-100 */
+  --warn: 180 83 9; /* amber-700 */
+  --warn-soft: 254 243 199; /* amber-100 */
+
+  --shadow: 15 23 42; /* slate-900 — shadow base */
+
+  color-scheme: light;
+}
+
+.dark {
+  --bg: 11 15 20; /* deep slate-black canvas */
+  --surface: 18 24 33; /* cards */
+  --surface-2: 26 34 45; /* subtle fills, inputs */
+  --line: 30 42 56; /* hairline borders */
+  --line-strong: 51 65 85; /* hover / emphasis borders */
+  --fg: 248 250 252; /* primary text — near-white */
+  --fg-muted: 148 163 184; /* secondary text */
+  --fg-subtle: 100 116 139; /* tertiary / placeholder */
+
+  --accent: 22 224 163; /* bright mint — pops on dark */
+  --accent-hover: 52 232 178;
+  --accent-fg: 6 36 26; /* very dark green text on mint */
+  --accent-soft: 8 51 38; /* deep green tint */
+
+  --danger: 251 113 133; /* rose-400 — readable on dark */
+  --danger-soft: 67 20 32;
+  --warn: 251 191 36; /* amber-400 */
+  --warn-soft: 56 41 12;
+
+  --shadow: 0 0 0;
+
+  color-scheme: dark;
+}
+
+html,
+body,
+#root {
+  /* dvh tracks the *currently visible* viewport as the mobile browser's
+     address/nav bar shows and hides — so the footer and bottom CTAs pin just
+     above the chrome instead of sliding underneath it. vh is the fallback for
+     browsers without dvh. */
+  min-height: 100vh;
+  min-height: 100dvh;
+}
+html {
+  /* Match the footer's surface colour, not the canvas. Whatever shows OUTSIDE
+     the body — the overscroll area and the home-indicator region below the
+     footer — then reads as a seamless continuation of the footer instead of a
+     different shade. The body still paints the canvas tint over the content. */
+  background-color: rgb(var(--surface));
+}
+body {
+  font-family: "Inter", ui-sans-serif, system-ui, sans-serif;
+  font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  /* Prevent any rogue child element from forcing horizontal scroll on phones. */
+  overflow-x: hidden;
+  background-color: rgb(var(--bg));
+  color: rgb(var(--fg));
+  transition: background-color 200ms ease, color 200ms ease;
+}
+
+h1, h2, h3, h4 {
+  font-family: "Space Grotesk", "Inter", ui-sans-serif, system-ui, sans-serif;
+  letter-spacing: -0.02em;
+}
+
+/* Tabular figures for every money value so columns line up. */
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Custom scrollbar in dark mode so it doesn't glow white. */
+.dark ::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+.dark ::-webkit-scrollbar-thumb {
+  background: rgb(var(--line-strong));
+  border-radius: 999px;
+  border: 2px solid rgb(var(--bg));
+}
+
+/* ============================================================================
+   Safe-area helpers — keep bottom-anchored UI above iOS home indicator.
+   ============================================================================ */
+.pb-safe {
+  padding-bottom: max(0.75rem, env(safe-area-inset-bottom, 0px));
+}
+.mb-safe {
+  margin-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+/* ============================================================================
+   Component classes (@layer components so Tailwind utilities can override).
+   ============================================================================ */
+@layer components {
+  /* ---- Buttons ---- */
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-lg font-medium
+      transition-all duration-150 select-none
+      focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/60
+      focus-visible:ring-offset-2 focus-visible:ring-offset-bg
+      disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none;
+  }
+  .btn-primary {
+    @apply btn bg-accent text-accent-fg shadow-card
+      hover:bg-accent-hover active:scale-[0.98];
+  }
+  .btn-secondary {
+    @apply btn bg-surface text-fg border border-line
+      hover:border-line-strong hover:bg-surface-2 active:scale-[0.98];
+  }
+  .btn-ghost {
+    @apply btn text-fg-muted hover:text-fg hover:bg-surface-2;
+  }
+  .btn-danger {
+    @apply btn bg-surface text-danger border border-line
+      hover:bg-danger-soft hover:border-danger/40 active:scale-[0.98];
+  }
+  /* Comfortable default sizing — meets 44px touch target. */
+  .btn-md {
+    @apply px-4 py-2.5 text-sm min-h-[44px];
+  }
+  .btn-lg {
+    @apply px-6 py-3.5 text-base min-h-[52px];
+  }
+  .btn-sm {
+    @apply px-3 py-1.5 text-xs min-h-[36px];
+  }
+
+  /* ---- Surfaces ---- */
+  .card {
+    @apply rounded-xl border border-line bg-surface shadow-card;
+  }
+
+  /* ---- Inputs ---- */
+  .field {
+    @apply w-full rounded-lg border border-line bg-surface-2 text-fg
+      px-3.5 py-2.5 text-[0.95rem] min-h-[44px]
+      placeholder:text-fg-subtle
+      transition-colors duration-150
+      hover:border-line-strong
+      focus:outline-none focus:bg-surface focus:border-accent
+      focus:ring-2 focus:ring-accent/25;
+  }
+  .field-sm {
+    @apply min-h-[38px] px-2.5 py-1.5 text-sm;
+  }
+
+  /* ---- Chips / pills ---- */
+  .chip {
+    @apply inline-flex items-center gap-1 rounded-md px-2 py-0.5
+      text-[11px] font-medium uppercase tracking-wider;
+  }
+}
+
+/* ============================================================================
+   Editable-value affordance — wherever extracted values can be typed over.
+   Kept as a standalone class (used widely in ReviewStage) and themed via tokens.
+   ============================================================================ */
+.edit-input {
+  background-color: rgb(var(--surface-2));
+  border: 1px solid rgb(var(--line));
+  color: rgb(var(--fg));
+  border-radius: 0.5rem;
+  padding: 0.375rem 0.625rem;
+  font-size: 0.95rem;
+  min-height: 40px;
+  transition: background-color 120ms, border-color 120ms, box-shadow 120ms;
+}
+.edit-input::placeholder {
+  color: rgb(var(--fg-subtle));
+}
+.edit-input:hover {
+  border-color: rgb(var(--line-strong));
+}
+.edit-input:focus {
+  outline: none;
+  background-color: rgb(var(--surface));
+  border-color: rgb(var(--accent));
+  box-shadow: 0 0 0 3px rgb(var(--accent) / 0.22);
+}
+.edit-input.edit-input-sm {
+  min-height: 36px;
+  padding: 0.25rem 0.5rem;
+  font-size: 0.875rem;
+}
+
+/* Native controls (checkbox, select, radio) tint to the accent + theme. */
+input[type="checkbox"],
+input[type="radio"] {
+  accent-color: rgb(var(--accent));
+  width: 1.05rem;
+  height: 1.05rem;
+}
+select {
+  color: rgb(var(--fg));
+}
+
+/* ============================================================================
+   react-image-crop — keep the library's native sizing model.
+   `.ReactCrop` is inline-block and shrink-wraps the image, so the crop overlay
+   (absolutely positioned inside it) stays pixel-aligned with the image. A tall
+   image is constrained by setting `max-height` on `.ReactCrop` in CropStage —
+   the library propagates it down to the <img> via its own `max-height: inherit`
+   chain. Do NOT force the wrapper/image to fill a larger box here; that
+   decouples the overlay from the image and breaks alignment.
+   ============================================================================ */
