@@ -43,7 +43,7 @@ export function UploadStage({
         <h2 className="font-display text-[1.7rem] leading-tight sm:text-4xl font-bold tracking-tight mb-2.5 text-balance">
           {isIOS ? "Add a bill" : "Upload a restaurant bill"}
         </h2>
-        <p className="text-fg-muted text-sm sm:text-base mb-6 leading-relaxed max-w-md mx-auto">
+        <p className="text-fg-muted text-sm sm:text-base mb-5 leading-relaxed max-w-md mx-auto">
           We read the items and split them per person — alcohol VAT only on the
           drinkers, food GST only on those who ate.
         </p>
@@ -53,7 +53,7 @@ export function UploadStage({
           <div className="space-y-3 text-left">
             <label
               className={`group relative flex flex-col items-center justify-center text-center
-                rounded-2xl bg-accent text-accent-fg px-6 py-8 shadow-card-lg cursor-pointer
+                rounded-2xl bg-accent text-accent-fg px-6 py-7 shadow-card-lg cursor-pointer
                 transition-all duration-150 active:scale-[0.99]
                 ${busy ? "opacity-60 pointer-events-none" : "hover:bg-accent-hover"}`}
             >
@@ -155,7 +155,7 @@ export function UploadStage({
         )}
 
         {/* How-it-works mini rail */}
-        <ol className="mt-6 grid grid-cols-4 gap-2">
+        <ol className="mt-5 grid grid-cols-4 gap-2">
           {STEPS_HINT.map(({ icon: Ico, label }, i) => (
             <li key={label} className="flex flex-col items-center gap-1.5 text-center">
               <span className="grid place-items-center w-9 h-9 rounded-lg bg-surface-2 text-fg-muted">
@@ -167,7 +167,7 @@ export function UploadStage({
           ))}
         </ol>
 
-        <p className="mt-5 text-xs text-fg-subtle">
+        <p className="mt-4 text-xs text-fg-subtle">
           Indian dine-in, takeaway, Swiggy &amp; Zomato bills are all supported.
         </p>
       </div>

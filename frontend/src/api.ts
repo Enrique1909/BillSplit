@@ -23,6 +23,22 @@ async function readError(r: Response): Promise<string> {
   return text || `${r.status} ${r.statusText}`;
 }
 
+/** Basic end-of-flow feedback → logged server-side (best-effort). */
+export async function sendFeedback(
+  sentiment: "good" | "bad",
+  wouldUseAgain: boolean
+): Promise<void> {
+  try {
+    await fetch(`${API}/feedback`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ sentiment, would_use_again: wouldUseAgain }),
+    });
+  } catch {
+    /* best-effort, non-blocking */
+  }
+}
+
 /** Tell the backend who just signed in (so the owner sees identities in logs). */
 export async function pingSession(token?: string | null): Promise<void> {
   try {

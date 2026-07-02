@@ -48,19 +48,27 @@ export function LoadingOverlay({
     : DEFAULT_STEPS;
   const [stepIdx, setStepIdx] = useState(0);
   const [elapsed, setElapsed] = useState(0);
+  const [progress, setProgress] = useState(0);
 
   useEffect(() => {
     if (!show) {
       setStepIdx(0);
       setElapsed(0);
+      setProgress(0);
       return;
     }
     const startedAt = Date.now();
     const id = setInterval(() => {
-      const seconds = Math.floor((Date.now() - startedAt) / 1000);
+      const ms = Date.now() - startedAt;
+      const seconds = Math.floor(ms / 1000);
       setElapsed(seconds);
       setStepIdx(Math.min(STEPS.length - 1, Math.floor(seconds / 2)));
-    }, 250);
+      // Determinate-looking bar that eases toward ~92% and never falsely
+      // "completes" — it decelerates the longer things take, which reads as
+      // steady progress rather than a frozen spinner. It snaps to 100% only
+      // when `show` flips false (the request actually finished).
+      setProgress(92 * (1 - Math.exp(-ms / 9000)));
+    }, 200);
     return () => clearInterval(id);
     // STEPS is derived from `label`, so when the label changes mid-flight we
     // restart the cycle from step 0 of the new step list.
@@ -73,7 +81,7 @@ export function LoadingOverlay({
     <div
       role="status"
       aria-live="polite"
-      className="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-md flex items-center justify-center p-6 animate-fade-in"
+      className="fixed inset-0 z-[80] bg-slate-950/70 backdrop-blur-md flex items-center justify-center p-6 animate-fade-in"
     >
       <div className="card shadow-pop p-6 sm:p-8 max-w-sm w-full text-center animate-scale-in">
         {/* Animated spinner */}
@@ -94,9 +102,30 @@ export function LoadingOverlay({
           </span>
         </p>
 
-        {/* Elapsed counter — calming evidence the app isn't frozen */}
-        <p className="text-xs text-fg-subtle mt-3 tabular-nums">
-          {elapsed}s elapsed · usually 5–10s
+        {/* Progress bar — a moving fill gives clearer "it's working" feedback
+            than the spinner alone. It eases toward ~92% (see effect above). */}
+        <div
+          className="mt-3 h-2 w-full overflow-hidden rounded-full bg-surface-2"
+          role="progressbar"
+          aria-valuemin={0}
+          aria-valuemax={100}
+          aria-valuenow={Math.round(progress)}
+        >
+          <div
+            className="h-full rounded-full bg-accent transition-[width] duration-300 ease-out"
+            style={{ width: `${progress}%` }}
+          />
+        </div>
+
+        {/* Elapsed counter — calming evidence the app isn't frozen. The message
+            escalates so a cold-start (server waking up) doesn't feel broken. */}
+        <p className="text-xs text-fg-subtle mt-3">
+          <span className="tabular-nums">{elapsed}s</span>{" "}
+          {elapsed < 12
+            ? "· usually 5–10 seconds"
+            : elapsed < 25
+            ? "· hang tight, almost there…"
+            : "· the server may be waking up — the first request can take up to a minute"}
         </p>
       </div>
     </div>

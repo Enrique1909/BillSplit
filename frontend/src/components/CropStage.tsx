@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import ReactCrop, { type Crop, centerCrop, makeAspectCrop } from "react-image-crop";
 import "react-image-crop/dist/ReactCrop.css";
@@ -35,6 +35,36 @@ export function CropStage({
   const imgRef = useRef<HTMLImageElement | null>(null);
   const [crop, setCrop] = useState<Crop | undefined>();
   const [imageLoaded, setImageLoaded] = useState(false);
+
+  // Bound the image (and thus the crop overlay + its drag handles) to the ACTUAL
+  // available area, measured live. A hardcoded `calc(100dvh - Npx)` estimate
+  // under-counts the real chrome (the bottom bar wraps to 2–3 rows on mobile,
+  // plus variable safe-area insets), which let a tall receipt grow taller than
+  // its container and overflow the clip region — dragging a handle to the
+  // image's true top/bottom then put it off-screen. A percentage max-height
+  // can't work here: ReactCrop is inline-block and shrink-wraps the image, so a
+  // %-max-height is circular and resolves to `none`. We measure the padded
+  // area's content box and pass definite pixels, which the library propagates
+  // down to the <img> via its `max-height: inherit` chain.
+  const areaRef = useRef<HTMLDivElement | null>(null);
+  const [maxBox, setMaxBox] = useState<{ w: number; h: number } | null>(null);
+  useLayoutEffect(() => {
+    const el = areaRef.current;
+    if (!el) return;
+    const measure = () => {
+      const cs = getComputedStyle(el);
+      const padX = parseFloat(cs.paddingLeft) + parseFloat(cs.paddingRight);
+      const padY = parseFloat(cs.paddingTop) + parseFloat(cs.paddingBottom);
+      setMaxBox({
+        w: Math.max(0, el.clientWidth - padX),
+        h: Math.max(0, el.clientHeight - padY),
+      });
+    };
+    measure();
+    const ro = new ResizeObserver(measure);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
 
   // Rotation support. Phones are often turned sideways to shoot a long receipt,
   // so the bill ends up rotated within an upright photo (no EXIF tag to fix it).
@@ -287,7 +317,10 @@ export function CropStage({
           ReactCrop (inherited down to the <img>), letterboxing tall receipts to
           fit while keeping the whole bill visible. The max-height subtracts the
           modal chrome (top bar + instruction + bottom bar + safe areas). */}
-      <div className="flex-1 min-h-0 w-full flex items-center justify-center p-3 sm:p-6 overflow-hidden">
+      <div
+        ref={areaRef}
+        className="flex-1 min-h-0 w-full flex items-center justify-center p-4 sm:p-6 overflow-hidden"
+      >
         <ReactCrop
           crop={crop}
           onChange={(_pixel, percent) => setCrop(percent)}
@@ -296,9 +329,8 @@ export function CropStage({
           ruleOfThirds
           keepSelection
           style={{
-            maxWidth: "100%",
-            maxHeight:
-              "calc(100dvh - 200px - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px))",
+            maxWidth: maxBox ? `${maxBox.w}px` : "100%",
+            maxHeight: maxBox ? `${maxBox.h}px` : "100%",
           }}
         >
           <img

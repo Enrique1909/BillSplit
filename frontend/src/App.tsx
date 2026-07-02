@@ -15,8 +15,9 @@ import { Stepper } from "./components/Stepper";
 import { useTheme } from "./theme";
 import { useAuth } from "./auth";
 import { SignInModal } from "./components/SignInModal";
+import { BugReportModal } from "./components/BugReportModal";
 import { identify, track, trackStage } from "./analytics";
-import { AlertTriangle, LogOut, Moon, Receipt, RotateCcw, Sun } from "./components/icons";
+import { AlertTriangle, Bug, LogOut, Moon, Receipt, RotateCcw, Sun } from "./components/icons";
 
 type Stage = "upload" | "crop" | "review" | "people" | "assign" | "summary" | "share";
 
@@ -133,6 +134,7 @@ export default function App() {
   // tried to extract while signed out is parked here until they sign in.
   const [pendingExtractFile, setPendingExtractFile] = useState<File | null>(null);
   const [signInOpen, setSignInOpen] = useState(false); // proactive (header button)
+  const [bugOpen, setBugOpen] = useState(false);
 
   const parentItems: BillItem[] = useMemo(
     () =>
@@ -617,8 +619,15 @@ export default function App() {
         </div>
       </main>
 
-      <footer className="border-t border-line bg-surface pt-3 pb-safe text-center text-xs text-fg-subtle">
-        BillSplit · INR · No data leaves this device except for OCR
+      <footer className="border-t border-line bg-bg pt-3 pb-safe text-center text-xs text-fg-subtle">
+        <button
+          onClick={() => setBugOpen(true)}
+          className="inline-flex items-center gap-1 hover:text-fg transition"
+        >
+          <Bug className="text-sm" />
+          Report a bug
+        </button>
+        <div className="mt-1">BillSplit · INR · No data leaves this device except for OCR</div>
       </footer>
 
       {/* Full-screen loading overlay — mounted at root so it covers everything,
@@ -644,6 +653,10 @@ export default function App() {
             setSignInOpen(false);
           }}
         />
+      )}
+
+      {bugOpen && (
+        <BugReportModal onClose={() => setBugOpen(false)} defaultEmail={user?.email} />
       )}
     </div>
   );

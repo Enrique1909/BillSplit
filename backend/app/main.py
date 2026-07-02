@@ -48,6 +48,21 @@ def health() -> dict:
     return {"status": "ok"}
 
 
+class FeedbackRequest(BaseModel):
+    sentiment: str  # "good" | "bad"
+    would_use_again: bool | None = None
+
+
+@app.post("/api/feedback")
+def feedback(req: FeedbackRequest) -> dict:
+    """Basic end-of-flow feedback. Logged so it's readable in the server logs;
+    also sent to GA4 from the client for aggregate metrics."""
+    log.info(
+        "feedback: sentiment=%s would_use_again=%s", req.sentiment, req.would_use_again
+    )
+    return {"ok": True}
+
+
 @app.post("/api/auth/session")
 def session(user: dict = Depends(require_user)) -> dict:
     """Called by the frontend right after sign-in. Logs WHO signed in (email) so

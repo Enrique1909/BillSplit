@@ -18,6 +18,7 @@ from __future__ import annotations
 import base64
 import io
 import json
+import re
 import logging
 import os
 import shutil
@@ -196,16 +197,19 @@ def _generate_with_fallback(client, img_bytes: bytes):
             models.append(m)
 
     for model in models:
+        is_25 = model.startswith("gemini-2.5")
         config_kwargs = {
             "response_mime_type": "application/json",
             "temperature": 0.1,
-            # Heavy bills (lots of items + modifiers) can exceed default token
-            # limits. 8000 covers everything we've seen with comfortable headroom.
-            "max_output_tokens": 8000,
+            # Give big bills plenty of room so the JSON isn't truncated mid-object
+            # (long addresses + many items add up — and on 2.5, thinking tokens
+            # also count against this budget). 2.5 supports up to 65k; 2.0/1.5 cap
+            # at 8192.
+            "max_output_tokens": 32768 if is_25 else 8192,
         }
         # Small thinking budget for 2.5 models — enough to run the cross-check
         # without burning time. 2.0/1.5 don't take a thinking_config.
-        if model.startswith("gemini-2.5") or "thinking" in model:
+        if is_25 or "thinking" in model:
             config_kwargs["thinking_config"] = genai_types.ThinkingConfig(thinking_budget=512)
 
         for attempt in range(3):
@@ -254,10 +258,27 @@ def extract_bill_with_gemini(image_path: str | Path) -> Bill:
 
     response = _generate_with_fallback(client, img_bytes)
 
-    raw_text = response.text or ""
+    raw_text = (response.text or "").strip()
+    # Strip accidental markdown fences (```json … ```), just in case.
+    if raw_text.startswith("```"):
+        raw_text = re.sub(r"^```(?:json)?\s*|\s*```$", "", raw_text).strip()
+
     try:
         payload = json.loads(raw_text)
     except json.JSONDecodeError as e:
+        # Valid-looking JSON that won't parse usually means it was cut off — the
+        # model hit its output-token cap mid-object on a very large bill.
+        finish = ""
+        try:
+            finish = str(response.candidates[0].finish_reason)
+        except Exception:
+            pass
+        if "MAX_TOKENS" in finish or (raw_text.startswith("{") and not raw_text.rstrip().endswith("}")):
+            raise ExtractorError(
+                "That bill was too large to read in one go (the response got cut "
+                "off). Try cropping tighter to just the items, or split a very long "
+                "receipt into two photos."
+            ) from e
         raise ExtractorError(
             f"Gemini returned non-JSON. First 300 chars: {raw_text[:300]!r}"
         ) from e

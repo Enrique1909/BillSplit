@@ -1,5 +1,12 @@
+import { useState } from "react";
 import type { Bill, Person, SplitResponse } from "../types";
-import { AlertTriangle, ArrowLeft, Check, ChevronDown, WhatsApp } from "./icons";
+import { sendFeedback } from "../api";
+import { track } from "../analytics";
+import {
+  AlertTriangle, ArrowLeft, Check, ChevronDown, ThumbsDown, ThumbsUp, WhatsApp,
+} from "./icons";
+
+const FEEDBACK_KEY = "billsplit-feedback";
 
 export function SummaryStage({
   bill,
@@ -16,6 +23,29 @@ export function SummaryStage({
 }) {
   const personById = Object.fromEntries(people.map((p) => [p.id, p]));
   const exact = split.sum_of_people === split.grand_total;
+
+  // --- one-time, two-tap feedback (good/bad → would use again) ---
+  const [alreadyGiven] = useState(() => {
+    try {
+      return !!localStorage.getItem(FEEDBACK_KEY);
+    } catch {
+      return false;
+    }
+  });
+  const [sentiment, setSentiment] = useState<"good" | "bad" | null>(null);
+  const [submitted, setSubmitted] = useState(false);
+
+  function submitFeedback(again: boolean) {
+    if (!sentiment) return;
+    track("feedback", { sentiment, would_use_again: again });
+    void sendFeedback(sentiment, again);
+    try {
+      localStorage.setItem(FEEDBACK_KEY, "1");
+    } catch {
+      /* ignore */
+    }
+    setSubmitted(true);
+  }
 
   return (
     <div>
@@ -155,6 +185,45 @@ export function SummaryStage({
           Share split
         </button>
       </div>
+
+      {/* One-time feedback — hidden once given (in this or a past session) */}
+      {!alreadyGiven && (
+        <div className="mt-6 card p-4 text-center animate-fade-in">
+          {submitted ? (
+            <p className="text-sm text-fg-muted">Thanks for the feedback 🙌</p>
+          ) : sentiment === null ? (
+            <>
+              <p className="text-sm font-medium mb-3">How was your split?</p>
+              <div className="flex justify-center gap-2">
+                <button
+                  onClick={() => setSentiment("good")}
+                  className="btn-secondary btn-md gap-1.5"
+                >
+                  <ThumbsUp className="text-base text-accent" /> Good
+                </button>
+                <button
+                  onClick={() => setSentiment("bad")}
+                  className="btn-secondary btn-md gap-1.5"
+                >
+                  <ThumbsDown className="text-base text-danger" /> Bad
+                </button>
+              </div>
+            </>
+          ) : (
+            <>
+              <p className="text-sm font-medium mb-3">Would you use BillSplit again?</p>
+              <div className="flex justify-center gap-2">
+                <button onClick={() => submitFeedback(true)} className="btn-primary btn-md">
+                  Yes
+                </button>
+                <button onClick={() => submitFeedback(false)} className="btn-secondary btn-md">
+                  No
+                </button>
+              </div>
+            </>
+          )}
+        </div>
+      )}
 
       <div className="mt-6 text-xs text-fg-subtle text-center">
         {bill.restaurant.name} · Bill #{bill.meta.bill_no} · {bill.meta.date}

@@ -68,11 +68,12 @@ body,
   min-height: 100dvh;
 }
 html {
-  /* Match the footer's surface colour, not the canvas. Whatever shows OUTSIDE
-     the body — the overscroll area and the home-indicator region below the
-     footer — then reads as a seamless continuation of the footer instead of a
-     different shade. The body still paints the canvas tint over the content. */
-  background-color: rgb(var(--surface));
+  /* Paint the canvas colour on the root element too, so everything OUTSIDE the
+     body — the overscroll/rubber-band area and the home-indicator region below
+     the footer — reads as one seamless dark surface. The footer itself is also
+     canvas-coloured (bg-bg) with just a hairline top border, so there's no
+     lighter band at the bottom of the screen on mobile. */
+  background-color: rgb(var(--bg));
 }
 body {
   font-family: "Inter", ui-sans-serif, system-ui, sans-serif;

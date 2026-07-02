@@ -201,6 +201,31 @@ export const Lock = (p: IconProps) => (
     <path d="M7 11V7a5 5 0 0 1 10 0v4" />
   </Icon>
 );
+export const ThumbsUp = (p: IconProps) => (
+  <Icon {...p}>
+    <path d="M7 10v12" />
+    <path d="M15 5.88 14 10h5.83a2 2 0 0 1 1.92 2.56l-2.33 8A2 2 0 0 1 17.5 22H4a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2h2.76a2 2 0 0 0 1.79-1.11L12 2a3.13 3.13 0 0 1 3 3.88Z" />
+  </Icon>
+);
+export const ThumbsDown = (p: IconProps) => (
+  <Icon {...p}>
+    <path d="M17 14V2" />
+    <path d="M9 18.12 10 14H4.17a2 2 0 0 1-1.92-2.56l2.33-8A2 2 0 0 1 6.5 2H20a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-2.76a2 2 0 0 0-1.79 1.11L12 22a3.13 3.13 0 0 1-3-3.88Z" />
+  </Icon>
+);
+export const Bug = (p: IconProps) => (
+  <Icon {...p}>
+    <path d="m8 2 1.88 1.88M14.12 3.88 16 2M9 7.13v-1a3.003 3.003 0 1 1 6 0v1" />
+    <path d="M12 20c-3.3 0-6-2.7-6-6v-3a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v3c0 3.3-2.7 6-6 6" />
+    <path d="M12 20v-9M6.53 9C4.6 8.8 3 7.1 3 5M6 13H2M3 21c0-2.1 1.7-3.9 3.8-4M20.97 5c0 2.1-1.6 3.8-3.5 4M22 13h-4M17.2 17c2.1.1 3.8 1.9 3.8 4" />
+  </Icon>
+);
+export const Send = (p: IconProps) => (
+  <Icon {...p}>
+    <path d="M22 2 11 13" />
+    <path d="M22 2 15 22l-4-9-9-4Z" />
+  </Icon>
+);
 export const RotateCw = (p: IconProps) => (
   <Icon {...p}>
     <path d="M21 12a9 9 0 1 1-9-9 9.75 9.75 0 0 1 6.74 2.74L21 8" />

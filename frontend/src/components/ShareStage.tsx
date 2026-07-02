@@ -2,12 +2,18 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import QRCode from "qrcode";
 import type { Bill, Person, SplitResponse } from "../types";
 import {
-  ArrowLeft, Check, Copy, IndianRupee, QrCode, RotateCcw, WhatsApp,
+  ArrowLeft, Check, Copy, IndianRupee, RotateCcw, WhatsApp,
 } from "./icons";
 
 // Remembers each person's UPI ID by name across bills, so the payer's VPA
 // pre-fills next time they're the one who paid.
 const UPI_MAP_KEY = "billsplit-upi-ids";
+
+// Public app URL appended to shared messages so recipients can try it too.
+// Override per-environment with VITE_APP_URL if the domain changes.
+const APP_URL =
+  (import.meta.env.VITE_APP_URL as string | undefined) ||
+  "https://bill-split-lyart.vercel.app";
 
 const inr = (n: number) => `₹${Math.round(n).toLocaleString("en-IN")}`;
 
@@ -23,24 +29,6 @@ function loadUpiMap(): Record<string, string> {
   } catch {
     return {};
   }
-}
-
-/**
- * Build a UPI "pay" deep link. The PAYER's VPA is the PAYEE here, so tapping it
- * opens the friend's UPI app pre-filled to pay that amount straight into the
- * bill-payer's account. Works with any UPI app (GPay, PhonePe, Paytm, …).
- */
-function upiPayLink(vpa: string, amount: number, note: string): string {
-  const pn = vpa.split("@")[0] || "BillSplit";
-  const tn = note.replace(/[^a-zA-Z0-9 ]/g, "").trim().slice(0, 40);
-  const q = [
-    `pa=${encodeURIComponent(vpa.trim())}`,
-    `pn=${encodeURIComponent(pn)}`,
-    `am=${amount.toFixed(2)}`,
-    `cu=INR`,
-    `tn=${encodeURIComponent(tn)}`,
-  ].join("&");
-  return `upi://pay?${q}`;
 }
 
 // Format ₹ with a sign-aware option for the taxes/charges line.
@@ -85,17 +73,29 @@ function buildMessage(
     lines.push("");
   }
 
-  lines.push("via BillSplit");
+  lines.push(`via BillSplit (${APP_URL})`);
   return lines.join("\n").replace(/\n{3,}/g, "\n\n").trim();
 }
 
-// Decode the backend's base64 JPEG preview into a File for the Web Share API.
-function base64ToFile(b64: string, filename: string): File | null {
+// A no-amount UPI "collect" link → one QR the whole group can scan to pay the
+// payer (each person enters/knows their own amount from the breakdown).
+function upiCollectLink(vpa: string, payeeName: string): string {
+  const pn = (payeeName || vpa.split("@")[0] || "BillSplit")
+    .replace(/[^a-zA-Z0-9 ]/g, "")
+    .trim();
+  const q = [`pa=${encodeURIComponent(vpa.trim())}`, `pn=${encodeURIComponent(pn)}`, "cu=INR"].join("&");
+  return `upi://pay?${q}`;
+}
+
+// Turn a QR PNG data URL into a File for the Web Share API.
+function dataUrlToFile(dataUrl: string, filename: string): File | null {
   try {
+    const [meta, b64] = dataUrl.split(",");
+    const mime = /data:(.*?);base64/.exec(meta)?.[1] || "image/png";
     const bin = atob(b64);
     const bytes = new Uint8Array(bin.length);
     for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
-    return new File([bytes], filename, { type: "image/jpeg" });
+    return new File([bytes], filename, { type: mime });
   } catch {
     return null;
   }
@@ -115,7 +115,6 @@ export function ShareStage({
   onReset: () => void;
 }) {
   const personById = Object.fromEntries(people.map((p) => [p.id, p]));
-  const restaurant = bill.restaurant.name?.trim() || "Bill";
 
   // ----- who paid + their UPI -----
   const [payerId, setPayerId] = useState<string | null>(null);
@@ -144,26 +143,29 @@ export function ShareStage({
     }
   }, [payer, upiId, validUpi]);
 
-  // ----- QR (generated on-device) -----
-  const [qrFor, setQrFor] = useState<string | null>(null);
-  const [qrUrl, setQrUrl] = useState<string>("");
-  async function toggleQr(personId: string, link: string) {
-    if (qrFor === personId) {
-      setQrFor(null);
+  // One receiver QR (payer's UPI ID, no amount) — displayed for in-person
+  // scanning; each payer scans it and enters their own amount. Generated
+  // on-device whenever the payer/UPI changes.
+  const [receiverQr, setReceiverQr] = useState<string>("");
+  useEffect(() => {
+    if (!payer || !validUpi) {
+      setReceiverQr("");
       return;
     }
-    try {
-      const url = await QRCode.toDataURL(link, {
-        margin: 1,
-        width: 240,
-        color: { dark: "#000000", light: "#ffffff" },
-      });
-      setQrUrl(url);
-      setQrFor(personId);
-    } catch {
-      /* ignore */
-    }
-  }
+    let cancelled = false;
+    QRCode.toDataURL(upiCollectLink(upiId, payer.name), {
+      margin: 2,
+      width: 360,
+      color: { dark: "#000000", light: "#ffffff" },
+    })
+      .then((url) => {
+        if (!cancelled) setReceiverQr(url);
+      })
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+    };
+  }, [payer, upiId, validUpi]);
 
   // ----- message draft (synced until the user edits it) -----
   const generated = useMemo(
@@ -181,7 +183,7 @@ export function ShareStage({
   const taRef = useRef<HTMLTextAreaElement>(null);
   const rows = Math.min(20, Math.max(8, text.split("\n").length + 1));
 
-  async function copy() {
+  async function writeClipboard() {
     try {
       await navigator.clipboard.writeText(text);
     } catch {
@@ -192,9 +194,13 @@ export function ShareStage({
         /* selected for manual copy */
       }
     }
+  }
+  async function copy() {
+    await writeClipboard();
     setCopied(true);
     setTimeout(() => setCopied(false), 1800);
   }
+  // wa.me reliably delivers the breakdown TEXT (the important bit).
   function openWhatsApp() {
     window.open(
       `https://wa.me/?text=${encodeURIComponent(text)}`,
@@ -203,34 +209,45 @@ export function ShareStage({
     );
   }
 
-  // Bill photo attachment via the Web Share API (the only way to attach a file —
-  // wa.me text links can't carry an image). The user picks WhatsApp from the
-  // native share sheet and gets the photo + breakdown together. Falls back to
-  // the text-only WhatsApp link where file sharing isn't supported (e.g. desktop).
-  const billFile = useMemo(
-    () =>
-      bill.preview_image_base64
-        ? base64ToFile(bill.preview_image_base64, "bill.jpg")
-        : null,
-    [bill.preview_image_base64]
-  );
-  const canShareBill =
-    !!billFile &&
-    typeof navigator !== "undefined" &&
-    typeof navigator.canShare === "function" &&
-    navigator.canShare({ files: [billFile] });
-
-  async function shareWithBill() {
-    if (billFile && canShareBill) {
-      try {
-        await navigator.share({ files: [billFile], text });
-        return;
-      } catch (e: any) {
-        if (e?.name === "AbortError") return; // user dismissed the sheet
-        // otherwise fall through to the text-only link
-      }
+  // Share the payer's UPI QR as an image — one QR the whole group scans to pay
+  // them. WhatsApp keeps EITHER text OR an image per share, so we also copy the
+  // breakdown to the clipboard (send it first via "Send on WhatsApp", or paste
+  // it under the QR). Falls back to downloading the QR where file-share isn't
+  // supported (desktop).
+  async function sharePaymentQr() {
+    if (!payer || !validUpi) return;
+    let dataUrl: string;
+    try {
+      dataUrl = await QRCode.toDataURL(upiCollectLink(upiId, payer.name), {
+        margin: 2,
+        width: 512,
+        color: { dark: "#000000", light: "#ffffff" },
+      });
+    } catch {
+      return;
     }
-    openWhatsApp();
+    const file = dataUrlToFile(dataUrl, `pay-${payer.name.replace(/\s+/g, "")}.png`);
+    await writeClipboard();
+    setCopied(true);
+    setTimeout(() => setCopied(false), 1800);
+    if (file && typeof navigator.canShare === "function" && navigator.canShare({ files: [file] })) {
+      try {
+        await navigator.share({
+          files: [file],
+          text: `Pay ${payer.name} · ${upiId.trim()} — your share is in the breakdown 🙏`,
+        });
+      } catch {
+        /* dismissed */
+      }
+    } else if (file) {
+      // Desktop fallback: download the QR so it can be attached manually.
+      const url = URL.createObjectURL(file);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = file.name;
+      a.click();
+      URL.revokeObjectURL(url);
+    }
   }
 
   // Everyone except the payer owes the payer their share.
@@ -271,28 +288,14 @@ export function ShareStage({
           {copied ? <Check className="text-base text-accent" /> : <Copy className="text-base" />}
           {copied ? "Copied!" : "Copy message"}
         </button>
-        <button
-          onClick={canShareBill ? shareWithBill : openWhatsApp}
-          className="btn-primary btn-md gap-2 flex-1"
-        >
+        <button onClick={openWhatsApp} className="btn-primary btn-md gap-2 flex-1">
           <WhatsApp className="text-base" />
-          {canShareBill ? "Share with bill photo" : "Open WhatsApp"}
+          Send on WhatsApp
         </button>
       </div>
-      {canShareBill && (
-        <button
-          onClick={openWhatsApp}
-          className="btn-ghost btn-sm mt-2 gap-1.5"
-        >
-          Open WhatsApp — text only
-        </button>
-      )}
       <p className="mt-2 text-xs text-fg-subtle leading-snug">
-        {canShareBill
-          ? "“Share with bill photo” opens your share sheet — pick WhatsApp to send the bill image and breakdown together."
-          : bill.preview_image_base64
-          ? "Attaching the bill photo needs a phone — on desktop the message goes as text only."
-          : "No bill photo available to attach."}
+        Sends the breakdown text. To collect, set who paid below and share their
+        payment QR.
       </p>
 
       {/* ---- Collect via UPI ---- */}
@@ -302,8 +305,9 @@ export function ShareStage({
           Collect via UPI
         </h3>
         <p className="text-xs text-fg-muted mt-1 mb-3 leading-relaxed">
-          Who paid the bill? Pick them and add their UPI ID — everyone else gets a
-          link to pay them their share directly. Nothing routes through BillSplit.
+          Who paid the bill? Pick them and add their UPI ID — then everyone scans
+          one QR to pay them, entering their amount from the list. Nothing routes
+          through BillSplit.
         </p>
 
         {/* Payer picker */}
@@ -369,63 +373,59 @@ export function ShareStage({
               {payer.name} covered everything — no one else to collect from.
             </p>
           ) : (
-            <ul className="mt-4 space-y-2">
-              {debtors.map((b) => {
-                const p = personById[b.person_id];
-                if (!p) return null;
-                const link = upiPayLink(upiId, b.total, `${restaurant} ${p.name}`);
-                const open = qrFor === b.person_id;
-                return (
-                  <li
-                    key={b.person_id}
-                    className="rounded-xl border border-line bg-surface-2/40 p-2.5"
-                  >
-                    <div className="flex items-center gap-2.5">
+            <>
+              {/* One QR everyone scans in person; they enter their own amount */}
+              {receiverQr && (
+                <div className="mt-4 flex flex-col items-center gap-2">
+                  <img
+                    src={receiverQr}
+                    alt={`Scan to pay ${payer.name}`}
+                    className="w-52 h-52 rounded-xl bg-white p-2.5 shadow-card"
+                  />
+                  <p className="text-sm font-semibold">Scan to pay {payer.name}</p>
+                  <p className="text-xs text-fg-subtle text-center max-w-[17rem]">
+                    Everyone scans this in their UPI app and enters their amount from the
+                    list below.
+                  </p>
+                </div>
+              )}
+
+              {/* Who owes what — the amount each person enters */}
+              <ul className="mt-4 rounded-xl border border-line overflow-hidden divide-y divide-line">
+                {debtors.map((b) => {
+                  const p = personById[b.person_id];
+                  if (!p) return null;
+                  return (
+                    <li
+                      key={b.person_id}
+                      className="flex items-center gap-2.5 px-3 py-2.5 bg-surface-2/40"
+                    >
                       <span
-                        className="w-8 h-8 rounded-full grid place-items-center text-white font-bold text-xs shrink-0"
+                        className="w-7 h-7 rounded-full grid place-items-center text-white font-bold text-[11px] shrink-0"
                         style={{ backgroundColor: p.color }}
                       >
                         {p.name[0]?.toUpperCase()}
                       </span>
                       <span className="flex-1 min-w-0 font-medium truncate">{p.name}</span>
                       <span className="tabular-nums font-semibold shrink-0">{inr(b.total)}</span>
-                      <a href={link} className="btn-primary btn-sm shrink-0">
-                        Pay {payer.name.split(" ")[0]}
-                      </a>
-                      <button
-                        onClick={() => toggleQr(b.person_id, link)}
-                        className={`btn-sm shrink-0 ${open ? "btn-primary" : "btn-secondary"}`}
-                        aria-label={`Show QR for ${p.name} to pay ${payer.name}`}
-                        aria-pressed={open}
-                      >
-                        <QrCode className="text-base" />
-                      </button>
-                    </div>
-                    {open && qrUrl && (
-                      <div className="mt-3 flex flex-col items-center gap-1.5 animate-scale-in">
-                        <img
-                          src={qrUrl}
-                          alt={`Scan to pay ${payer.name} for ${p.name}'s share`}
-                          className="w-44 h-44 rounded-lg bg-white p-2"
-                        />
-                        <p className="text-xs text-fg-subtle text-center">
-                          {p.name} scans to pay {inr(b.total)} to {upiId.trim()}
-                        </p>
-                      </div>
-                    )}
-                  </li>
-                );
-              })}
-            </ul>
+                    </li>
+                  );
+                })}
+              </ul>
+
+              {/* Remote: share the same QR on WhatsApp */}
+              <button onClick={sharePaymentQr} className="btn-secondary btn-md w-full mt-3 gap-2">
+                <WhatsApp className="text-base" />
+                Share this QR on WhatsApp
+              </button>
+            </>
           )
         )}
 
         {payer && validUpi && debtors.length > 0 && (
           <p className="text-[11px] text-fg-subtle mt-3 leading-snug">
-            "Pay {payer.name.split(" ")[0]}" opens the friend's UPI app pre-filled
-            — best on Android, in person, or when you send the link directly. The
-            WhatsApp draft also names {payer.name} and their UPI ID so anyone can
-            pay manually, and the QR works for in-person scanning.
+            Works in any UPI app (GPay, PhonePe, Paytm…). "Share this QR on WhatsApp"
+            sends the same QR to the group for those settling remotely.
           </p>
         )}
       </section>
