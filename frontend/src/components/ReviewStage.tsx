@@ -973,16 +973,23 @@ export function ReviewStage({
         >
           {imagePreview ? (
             <div className="relative group">
-              <img
-                src={imagePreview}
-                alt="bill — tap to zoom"
-                onClick={() => setZoomed(true)}
+              {/* Show the bill at full column width and let it SCROLL rather than
+                  shrink-to-fit — a long or cropped receipt stays readable so the
+                  user can actually cross-check line items against the fields
+                  below. Fullscreen zoom is still one tap away. */}
+              <div
                 className="
-                  w-full rounded-xl border border-line cursor-zoom-in transition hover:opacity-95
-                  max-h-[35vh] object-contain bg-surface
-                  lg:max-h-none
+                  max-h-[46vh] overflow-y-auto rounded-xl border border-line bg-surface
+                  lg:max-h-none lg:overflow-visible
                 "
-              />
+              >
+                <img
+                  src={imagePreview}
+                  alt="bill — tap to zoom"
+                  onClick={() => setZoomed(true)}
+                  className="block w-full h-auto cursor-zoom-in"
+                />
+              </div>
               <button
                 type="button"
                 onClick={() => setZoomed(true)}

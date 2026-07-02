@@ -435,7 +435,14 @@ export default function App() {
 
   return (
     <div className="min-h-[100dvh] flex flex-col">
-      <header className="border-b border-line bg-surface/85 backdrop-blur-lg sticky top-0 z-30">
+      {/* When installed as a PWA (apple-mobile-web-app-status-bar-style is
+          black-translucent), the web view extends under the status bar, so we
+          pad the header down by the top safe-area inset — otherwise the logo
+          overlaps the clock/battery. In a normal browser this inset is 0. */}
+      <header
+        className="border-b border-line bg-surface/85 backdrop-blur-lg sticky top-0 z-30"
+        style={{ paddingTop: "env(safe-area-inset-top, 0px)" }}
+      >
         <div className="max-w-6xl mx-auto px-4 sm:px-6 h-14 sm:h-16 flex items-center justify-between gap-3">
           <div className="flex items-center gap-2.5 min-w-0">
             <div className="w-9 h-9 rounded-lg bg-accent text-accent-fg grid place-items-center shadow-card shrink-0">
@@ -623,7 +630,7 @@ export default function App() {
       <footer className="border-t border-line bg-bg pt-3 pb-safe text-center text-xs text-fg-subtle">
         <button
           onClick={() => setBugOpen(true)}
-          className="inline-flex items-center gap-1 hover:text-fg transition"
+          className="inline-flex items-center gap-1 font-medium text-orange-500 dark:text-orange-400 hover:text-orange-600 dark:hover:text-orange-300 transition"
         >
           <Bug className="text-sm" />
           Report a bug

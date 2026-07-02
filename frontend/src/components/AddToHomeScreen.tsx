@@ -12,7 +12,7 @@ import { track } from "../analytics";
 import { Download, ShareIOS, X } from "./icons";
 
 const DISMISS_KEY = "billsplit-a2hs-dismissed";
-const SHOW_DELAY_MS = 2500; // let the page settle before nudging
+const SHOW_DELAY_MS = 900; // brief settle, then nudge (don't make them wait)
 
 /**
  * A dismissible bottom banner nudging mobile users to install the app to their
@@ -83,7 +83,7 @@ export function AddToHomeScreen() {
       <div
         role="dialog"
         aria-label="Add BillSplit to your Home Screen"
-        className="pointer-events-auto mx-auto max-w-md card shadow-pop p-3.5 flex items-center gap-3 animate-slide-up"
+        className="pointer-events-auto mx-auto max-w-md rounded-2xl border border-accent/50 bg-accent-soft ring-1 ring-accent/25 shadow-pop p-3.5 flex items-center gap-3 animate-slide-up"
       >
         <img
           src="/icons/icon-192.png"

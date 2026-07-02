@@ -95,15 +95,13 @@ h1, h2, h3, h4 {
   font-variant-numeric: tabular-nums;
 }
 
-/* Custom scrollbar in dark mode so it doesn't glow white. */
-.dark ::-webkit-scrollbar {
-  width: 10px;
-  height: 10px;
+/* Hide scrollbars everywhere (content still scrolls) — cleaner, app-like look
+   on both the page and inner scroll areas like the Review bill preview. */
+* {
+  scrollbar-width: none; /* Firefox */
 }
-.dark ::-webkit-scrollbar-thumb {
-  background: rgb(var(--line-strong));
-  border-radius: 999px;
-  border: 2px solid rgb(var(--bg));
+::-webkit-scrollbar {
+  display: none; /* Chrome / Safari / Edge */
 }
 
 /* ============================================================================
