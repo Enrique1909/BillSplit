@@ -4,6 +4,9 @@ import App from "./App";
 import "./index.css";
 import { AuthProvider } from "./auth";
 import { initAnalytics } from "./analytics";
+// Side-effect import: registers the `beforeinstallprompt` listener at startup so
+// Android's native install prompt is captured even before React mounts.
+import "./pwa";
 
 initAnalytics();
 

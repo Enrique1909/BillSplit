@@ -16,6 +16,7 @@ import { useTheme } from "./theme";
 import { useAuth } from "./auth";
 import { SignInModal } from "./components/SignInModal";
 import { BugReportModal } from "./components/BugReportModal";
+import { AddToHomeScreen } from "./components/AddToHomeScreen";
 import { identify, track, trackStage } from "./analytics";
 import { AlertTriangle, Bug, LogOut, Moon, Receipt, RotateCcw, Sun } from "./components/icons";
 
@@ -658,6 +659,10 @@ export default function App() {
       {bugOpen && (
         <BugReportModal onClose={() => setBugOpen(false)} defaultEmail={user?.email} />
       )}
+
+      {/* "Add to Home Screen" nudge — only on the landing screen, and only for
+          mobile visitors who haven't installed or dismissed it (self-gated). */}
+      {stage === "upload" && <AddToHomeScreen />}
     </div>
   );
 }

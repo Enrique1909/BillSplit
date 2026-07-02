@@ -1,0 +1,16 @@
+{
+  "name": "BillSplit — pay only for what you ate",
+  "short_name": "BillSplit",
+  "description": "Snap an Indian restaurant bill and split it fairly per person — GST, service charge, and platform discounts handled automatically.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0b0f14",
+  "theme_color": "#0b0f14",
+  "icons": [
+    { "src": "/icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/icons/icon-maskable.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

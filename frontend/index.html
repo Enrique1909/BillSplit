@@ -3,13 +3,24 @@
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/png" sizes="192x192" href="/icons/icon-192.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <!-- Tints iOS PWA / Android system chrome to match the app canvas in each
          scheme so the status bar / tab bar never reads as a different colour. -->
     <meta name="theme-color" content="#f6f8fa" media="(prefers-color-scheme: light)" />
     <meta name="theme-color" content="#0b0f14" media="(prefers-color-scheme: dark)" />
+
+    <!-- Installable PWA ("Add to Home Screen"). Manifest + icons live in /public.
+         Swap the home-screen icon by editing public/icons/icon-source.svg and
+         running `npm run icons` (see public/icons/README.md). -->
+    <link rel="manifest" href="/manifest.webmanifest" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <!-- Label shown under the icon on the iOS Home Screen. -->
+    <meta name="apple-mobile-web-app-title" content="BillSplit" />
+    <!-- iOS ignores the manifest for the home-screen icon and uses this instead. -->
+    <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <!-- Space Grotesk for display/headings + tabular money figures; Inter for body. -->

@@ -163,11 +163,35 @@ export const ChevronDown = (p: IconProps) => (
     <path d="m6 9 6 6 6-6" />
   </Icon>
 );
+// iOS system "Share" glyph (box with an up-arrow) — used in the Add-to-Home-Screen
+// instructions so it matches what the user sees in Safari's toolbar.
+export const ShareIOS = (p: IconProps) => (
+  <Icon {...p}>
+    <path d="M12 3v12" />
+    <path d="m8 7 4-4 4 4" />
+    <path d="M20 12v7a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-7" />
+  </Icon>
+);
+export const Download = (p: IconProps) => (
+  <Icon {...p}>
+    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+    <path d="M7 10l5 5 5-5" />
+    <path d="M12 15V3" />
+  </Icon>
+);
+// Brand mark: a receipt with a ₹ inside (matches the app / home-screen icon).
+// The rupee is scaled to 0.62 about the centre and stroked heavier so it reads
+// as the same weight as the receipt outline after the down-scale.
 export const Receipt = (p: IconProps) => (
   <Icon {...p}>
     <path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1Z" />
-    <path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8" />
-    <path d="M12 17.5v-11" />
+    <g transform="translate(12,12) scale(0.62) translate(-12,-12)" strokeWidth={3.1}>
+      <path d="M6 3h12" />
+      <path d="M6 8h12" />
+      <path d="M6 13l8.5 8" />
+      <path d="M6 13h3" />
+      <path d="M9 13c6.667 0 6.667-10 0-10" />
+    </g>
   </Icon>
 );
 export const ImageIcon = (p: IconProps) => (

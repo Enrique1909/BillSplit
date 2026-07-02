@@ -169,8 +169,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 }
 
 /**
- * Renders the official Google button into a div via GIS, and fires One Tap.
+ * Renders the official Google button into a div via GIS.
  * `theme` follows the app theme so the button reads on either background.
+ *
+ * Note: we deliberately do NOT call `google.accounts.id.prompt()` (One Tap)
+ * here. This button already lives inside our own sign-in modal, so One Tap
+ * would stack a *second* Google prompt on top of it — a confusing double
+ * pop-up, plus its iframe leaves a white strip on mobile. Returning users are
+ * still restored silently via `auto_select` + the saved token.
  */
 export function GoogleSignInButton({ dark }: { dark?: boolean }) {
   const ref = useRef<HTMLDivElement>(null);
@@ -188,7 +194,6 @@ export function GoogleSignInButton({ dark }: { dark?: boolean }) {
       logo_alignment: "left",
       width: 280,
     });
-    window.google.accounts.id.prompt();
     // `ready` flips true once GIS is initialised, re-running this to draw the button.
   }, [dark, ready]);
   return <div ref={ref} className="flex justify-center min-h-[44px]" />;
