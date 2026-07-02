@@ -11,15 +11,8 @@ const BUG_EMAIL = "edcosta149@gmail.com";
  * gets the report + the reporter's address to reply). Auto-appends diagnostic
  * context so reports are actionable.
  */
-export function BugReportModal({
-  onClose,
-  defaultEmail,
-}: {
-  onClose: () => void;
-  defaultEmail?: string;
-}) {
+export function BugReportModal({ onClose }: { onClose: () => void }) {
   const [desc, setDesc] = useState("");
-  const [email, setEmail] = useState(defaultEmail ?? "");
 
   useEffect(() => {
     const prev = document.body.style.overflow;
@@ -39,7 +32,6 @@ export function BugReportModal({
       desc.trim() || "(no description)",
       "",
       "———",
-      email.trim() ? `Reply to: ${email.trim()}` : "",
       `Page: ${window.location.href}`,
       `When: ${new Date().toString()}`,
       `Device: ${navigator.userAgent}`,
@@ -79,8 +71,8 @@ export function BugReportModal({
           Report a bug
         </h3>
         <p className="text-sm text-fg-muted mb-4">
-          What went wrong? This opens your email app to send it to us — a bit of
-          device info is added automatically.
+          What went wrong? This opens your email app to send it to us — your email
+          address and a bit of device info come along automatically.
         </p>
 
         <textarea
@@ -91,15 +83,6 @@ export function BugReportModal({
           placeholder="Describe the problem, and what you were doing…"
           className="w-full resize-y rounded-lg bg-surface-2 text-fg p-3 text-sm border border-line
             placeholder:text-fg-subtle focus:outline-none focus:bg-surface focus:border-accent focus:ring-2 focus:ring-accent/25"
-        />
-        <input
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          type="email"
-          inputMode="email"
-          autoCapitalize="off"
-          placeholder="Your email (optional, so we can reply)"
-          className="field field-sm mt-2"
         />
 
         <div className="mt-4 flex justify-end gap-2">

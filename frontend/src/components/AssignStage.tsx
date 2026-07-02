@@ -183,11 +183,6 @@ export function AssignStage({
                               }
                             >
                               {p.name}
-                              {active && claims.length > 1 && (
-                                <span className="ml-1 text-xs opacity-80 tabular-nums">
-                                  ({Math.round((claim.share || 0) * 100)}%)
-                                </span>
-                              )}
                             </button>
                           );
                         })}

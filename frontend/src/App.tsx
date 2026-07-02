@@ -664,7 +664,7 @@ export default function App() {
       )}
 
       {bugOpen && (
-        <BugReportModal onClose={() => setBugOpen(false)} defaultEmail={user?.email} />
+        <BugReportModal onClose={() => setBugOpen(false)} />
       )}
 
       {/* "Add to Home Screen" nudge — only on the landing screen, and only for
