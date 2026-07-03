@@ -410,12 +410,13 @@ export function ReviewStage({
         </div>
       </div>
       <p className="text-fg-muted mb-4 text-sm leading-relaxed">
-        Make sure items, prices, taxes, charges, and discounts match the photo.
-        Tap any number to fix it,{" "}
+        We already read your bill — just skim the lines to check the items and amounts
+        look right, then tap <span className="font-medium text-fg">Add people</span> at
+        the bottom. Something off? Tap a line to edit it, or{" "}
         <button onClick={onRetake} className="text-accent underline underline-offset-2 hover:text-accent-hover transition">
           upload a different photo
         </button>
-        , or add anything that was missed.
+        .
       </p>
 
       {/* Reconciliation banner */}
@@ -434,8 +435,8 @@ export function ReviewStage({
         <div className="min-w-0">
           {reconciles ? (
             <>
-              <strong>Bill balances.</strong> Items + taxes + charges − discounts ± round-off ={" "}
-              ₹{bill.grand_total.toFixed(2)} (delta ₹{delta.toFixed(2)}).
+              <strong>Looks right — everything adds up</strong> to ₹{bill.grand_total.toFixed(2)}.
+              Skim the items below, then continue to <span className="font-medium">Add people</span>.
             </>
           ) : (
             <>
@@ -486,7 +487,39 @@ export function ReviewStage({
                     const children = section.items.filter((c) => c.parent_id === item.id);
                     const tag = TAX_LABELS[item.tax_class];
                     return (
-                      <li key={item.id} className="px-3 sm:px-4 py-3 group">
+                      <li key={item.id}>
+                        {/* Collapsed: a clean receipt-style row (name … ₹total).
+                            Tap to expand the editing controls — so the page reads
+                            like a bill to check, not a form to fill in. */}
+                        <details className="group/item">
+                          <summary className="flex items-center gap-3 px-3 sm:px-4 py-3 cursor-pointer list-none hover:bg-surface-2/40 transition">
+                            <span className="min-w-0 flex-1 font-medium truncate">
+                              {item.name || (
+                                <span className="text-fg-subtle italic font-normal">Untitled item</span>
+                              )}
+                              {children.length > 0 && (
+                                <span className="ml-1.5 text-xs text-fg-subtle font-normal">
+                                  +{children.length}
+                                </span>
+                              )}
+                            </span>
+                            {/* Tax-class label, same colours as the dropdown you
+                                get on expand — visible at a glance when collapsed. */}
+                            <span className={`shrink-0 text-[10px] font-medium px-1.5 py-0.5 rounded ${tag.className}`}>
+                              {tag.label}
+                            </span>
+                            {item.is_complimentary && (
+                              <span className="text-[10px] uppercase tracking-wider bg-accent-soft text-accent px-1.5 py-0.5 rounded font-semibold shrink-0">
+                                FOC
+                              </span>
+                            )}
+                            <span className="tabular-nums font-semibold shrink-0">
+                              {item.is_complimentary ? "Free" : `₹${item.line_total.toFixed(2)}`}
+                            </span>
+                            <ChevronDown className="text-sm text-fg-subtle shrink-0 transition-transform group-open/item:rotate-180" />
+                          </summary>
+
+                          <div className="px-3 sm:px-4 pb-3 pt-1">
                         {/* Row 1: name (always full width) */}
                         <input
                           className="w-full font-medium edit-input"
@@ -495,18 +528,21 @@ export function ReviewStage({
                           onChange={(e) => updateItem(item.id, { name: e.target.value })}
                         />
 
-                        {/* Row 2: tax-class chip + dropdown + delete */}
+                        {/* Row 2: tax-class + delete. One colour-coded dropdown
+                            (no separate chip) — it both shows the class and edits
+                            it, so it's not repeated. */}
                         <div className="flex items-center gap-2 mt-2 flex-wrap">
-                          <span className={`chip ${tag.className}`}>{tag.label}</span>
                           <select
-                            className="field field-sm w-auto text-xs"
+                            className={`rounded-md text-xs font-medium pl-2.5 pr-7 py-1.5 border border-transparent cursor-pointer
+                              focus:outline-none focus:ring-2 focus:ring-accent/30 ${tag.className}`}
                             value={item.tax_class}
                             onChange={(e) =>
                               updateItem(item.id, { tax_class: e.target.value as TaxClass })
                             }
+                            title="Tax category — how this item is taxed"
                           >
                             {TAX_CLASS_OPTIONS.map((c) => (
-                              <option key={c} value={c}>{c.replace(/_/g, " ")}</option>
+                              <option key={c} value={c}>{TAX_LABELS[c].label}</option>
                             ))}
                           </select>
                           <span className="flex-1" />
@@ -565,51 +601,64 @@ export function ReviewStage({
                           </div>
                         </div>
 
-                        {/* Row 4: per-item action chips — always visible on mobile (touch),
-                            hover-revealed on desktop */}
-                        <div className="flex items-center gap-1.5 mt-2 flex-wrap">
-                          <button
-                            onClick={() =>
-                              updateItem(item.id, {
-                                is_complimentary: !item.is_complimentary,
-                                line_total: item.is_complimentary
-                                  ? item.qty * item.unit_price
-                                  : 0,
-                                unit_price: item.is_complimentary ? item.unit_price : 0,
-                              })
-                            }
-                            className={`inline-flex items-center gap-1 text-xs px-2.5 py-1.5 rounded-md transition ${
-                              item.is_complimentary
-                                ? "bg-accent-soft text-accent font-medium"
-                                : "bg-surface-2 text-fg-muted hover:bg-accent-soft hover:text-accent"
-                            }`}
-                            title="Toggle: this item was free of charge"
-                          >
-                            <Gift className="text-sm" />
-                            {item.is_complimentary ? "FOC" : "mark FOC"}
-                          </button>
-                          <button
-                            onClick={() => addChild(item.id, section.id)}
-                            className="inline-flex items-center gap-1 text-xs px-2.5 py-1.5 rounded-md bg-surface-2 text-fg-muted hover:bg-accent-soft hover:text-accent transition"
-                            title="Add a sub-item / detail"
-                          >
-                            <Plus className="text-sm" /> detail
-                          </button>
-                          <button
-                            onClick={() =>
-                              setSplitDialog({
-                                itemId: item.id,
-                                sectionId: section.id,
-                                mode: "equal",
-                                firstValue: "50",
-                              })
-                            }
-                            className="inline-flex items-center gap-1 text-xs px-2.5 py-1.5 rounded-md bg-surface-2 text-fg-muted hover:bg-accent-soft hover:text-accent transition"
-                            title="Split this item into two halves (equal, custom amount, or custom %)"
-                          >
-                            <Scissors className="text-sm" /> split in 2
-                          </button>
-                        </div>
+                        {/* Row 4: per-item actions, tucked behind a compact
+                            "Options" disclosure so the list isn't a wall of
+                            buttons on mobile. The FOC state stays visible even
+                            when collapsed so a free item still reads at a glance. */}
+                        <details className="mt-2 group/opt">
+                          <summary className="flex items-center gap-1 text-xs text-fg-subtle hover:text-fg cursor-pointer list-none select-none w-fit">
+                            <ChevronDown className="text-xs transition-transform group-open/opt:rotate-180" />
+                            Options
+                            {item.is_complimentary && (
+                              <span className="ml-1 inline-flex items-center gap-1 text-accent font-medium">
+                                <Gift className="text-xs" /> FOC
+                              </span>
+                            )}
+                          </summary>
+                          <div className="flex items-center gap-1.5 mt-2 flex-wrap">
+                            <button
+                              onClick={() =>
+                                updateItem(item.id, {
+                                  is_complimentary: !item.is_complimentary,
+                                  line_total: item.is_complimentary
+                                    ? item.qty * item.unit_price
+                                    : 0,
+                                  unit_price: item.is_complimentary ? item.unit_price : 0,
+                                })
+                              }
+                              className={`inline-flex items-center gap-1 text-xs px-2.5 py-1.5 rounded-md transition ${
+                                item.is_complimentary
+                                  ? "bg-accent-soft text-accent font-medium"
+                                  : "bg-surface-2 text-fg-muted hover:bg-accent-soft hover:text-accent"
+                              }`}
+                              title="Toggle: this item was free of charge"
+                            >
+                              <Gift className="text-sm" />
+                              {item.is_complimentary ? "FOC" : "mark FOC"}
+                            </button>
+                            <button
+                              onClick={() => addChild(item.id, section.id)}
+                              className="inline-flex items-center gap-1 text-xs px-2.5 py-1.5 rounded-md bg-surface-2 text-fg-muted hover:bg-accent-soft hover:text-accent transition"
+                              title="Add a sub-item / detail"
+                            >
+                              <Plus className="text-sm" /> detail
+                            </button>
+                            <button
+                              onClick={() =>
+                                setSplitDialog({
+                                  itemId: item.id,
+                                  sectionId: section.id,
+                                  mode: "equal",
+                                  firstValue: "50",
+                                })
+                              }
+                              className="inline-flex items-center gap-1 text-xs px-2.5 py-1.5 rounded-md bg-surface-2 text-fg-muted hover:bg-accent-soft hover:text-accent transition"
+                              title="Split this item into two halves (equal, custom amount, or custom %)"
+                            >
+                              <Scissors className="text-sm" /> split in 2
+                            </button>
+                          </div>
+                        </details>
 
                         {/* Inline split dialog — appears beneath the item it
                             applies to. Mobile-friendly because it doesn't open
@@ -721,6 +770,8 @@ export function ReviewStage({
                             ))}
                           </ul>
                         )}
+                          </div>
+                        </details>
                       </li>
                     );
                   })}
@@ -747,12 +798,14 @@ export function ReviewStage({
           </div>
 
           {/* Taxes / Charges / Discounts */}
-          <section className="card px-4 py-3">
-            <div className="flex items-baseline justify-between mb-3">
-              <h3 className="font-semibold text-sm uppercase tracking-wider text-fg-muted">
+          <section className="card mb-5">
+            {/* Header bar — identical treatment to a menu section header. */}
+            <div className="px-3 sm:px-4 py-2 border-b border-line">
+              <h3 className="font-semibold text-sm uppercase tracking-wider text-fg">
                 Taxes, Charges &amp; Discounts
               </h3>
             </div>
+            <div className="px-4 py-3">
 
             {/* Taxes */}
             <div className="mb-3">
@@ -765,7 +818,16 @@ export function ReviewStage({
                   <li className="text-xs text-fg-subtle italic py-1">none</li>
                 )}
                 {bill.taxes.map((t) => (
-                  <li key={t.id} className="py-3 group">
+                  <li key={t.id}>
+                    <details className="group/tax">
+                      <summary className="flex items-center gap-3 py-2.5 -mx-4 px-4 cursor-pointer list-none hover:bg-surface-2/40 transition">
+                        <span className="min-w-0 flex-1 font-medium truncate">
+                          {t.label || <span className="text-fg-subtle italic font-normal">Tax</span>}
+                        </span>
+                        <span className="tabular-nums font-semibold shrink-0">₹{t.amount.toFixed(2)}</span>
+                        <ChevronDown className="text-sm text-fg-subtle shrink-0 transition-transform group-open/tax:rotate-180" />
+                      </summary>
+                      <div className="pb-3 pt-1">
                     <div className="grid grid-cols-[1fr,auto,auto,auto] sm:flex sm:items-center gap-2">
                       <input
                         className="font-medium edit-input edit-input-sm min-w-0 col-span-1 sm:w-28"
@@ -819,6 +881,8 @@ export function ReviewStage({
                         );
                       })}
                     </div>
+                      </div>
+                    </details>
                   </li>
                 ))}
               </ul>
@@ -835,7 +899,16 @@ export function ReviewStage({
                   <li className="text-xs text-fg-subtle italic py-1">none</li>
                 )}
                 {bill.bill_level_charges.map((c) => (
-                  <li key={c.id} className="py-3 group">
+                  <li key={c.id}>
+                    <details className="group/chg">
+                      <summary className="flex items-center gap-3 py-2.5 -mx-4 px-4 cursor-pointer list-none hover:bg-surface-2/40 transition">
+                        <span className="min-w-0 flex-1 font-medium truncate">
+                          {c.label || <span className="text-fg-subtle italic font-normal">Charge</span>}
+                        </span>
+                        <span className="tabular-nums font-semibold shrink-0">₹{c.amount.toFixed(2)}</span>
+                        <ChevronDown className="text-sm text-fg-subtle shrink-0 transition-transform group-open/chg:rotate-180" />
+                      </summary>
+                      <div className="pb-3 pt-1">
                     <div className="grid grid-cols-[1fr,auto,auto] sm:flex sm:items-center gap-2">
                       <input
                         className="font-medium edit-input edit-input-sm sm:w-36 col-span-3 sm:col-span-1"
@@ -871,6 +944,8 @@ export function ReviewStage({
                         ><Trash className="text-sm" /></button>
                       </div>
                     </div>
+                      </div>
+                    </details>
                   </li>
                 ))}
               </ul>
@@ -890,7 +965,16 @@ export function ReviewStage({
                   <li className="text-xs text-fg-subtle italic py-1">none</li>
                 )}
                 {bill.discounts.map((d) => (
-                  <li key={d.id} className="py-3 group">
+                  <li key={d.id}>
+                    <details className="group/dis">
+                      <summary className="flex items-center gap-3 py-2.5 -mx-4 px-4 cursor-pointer list-none hover:bg-surface-2/40 transition">
+                        <span className="min-w-0 flex-1 font-medium truncate text-accent">
+                          {d.label || <span className="text-fg-subtle italic font-normal">Discount</span>}
+                        </span>
+                        <span className="tabular-nums font-semibold shrink-0 text-accent">−₹{d.amount.toFixed(2)}</span>
+                        <ChevronDown className="text-sm text-fg-subtle shrink-0 transition-transform group-open/dis:rotate-180" />
+                      </summary>
+                      <div className="pb-3 pt-1">
                     <div className="grid grid-cols-[1fr,auto,auto] sm:flex sm:items-center gap-2">
                       <input
                         className="font-medium edit-input edit-input-sm sm:w-36 col-span-3 sm:col-span-1 text-accent"
@@ -925,6 +1009,8 @@ export function ReviewStage({
                         ><Trash className="text-sm" /></button>
                       </div>
                     </div>
+                      </div>
+                    </details>
                   </li>
                 ))}
               </ul>
@@ -951,6 +1037,7 @@ export function ReviewStage({
                 />
               </li>
             </ul>
+            </div>
           </section>
         </div>
 

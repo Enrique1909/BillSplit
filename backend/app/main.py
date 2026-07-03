@@ -21,7 +21,12 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
 from .auth import enforce_extract_quota, require_user
-from .extractor import ExtractorError, OverloadedError, extract_bill_with_gemini
+from .extractor import (
+    ExtractorError,
+    NotABillError,
+    OverloadedError,
+    extract_bill_with_gemini,
+)
 from .schema import Bill
 from .splitter import Assignment, SplitOptions, SplitResult, split_bill
 
@@ -103,6 +108,11 @@ async def extract(
         # can show a friendly "busy, try again" instead of a scary error.
         log.warning("Gemini overloaded: %s", e)
         raise HTTPException(503, str(e), headers={"Retry-After": "30"})
+    except NotABillError as e:
+        # User-input problem (wrong photo), not a server error — 422 with the
+        # clean message so the UI can show it as-is without a scary prefix.
+        log.info("Not a bill: %s", e)
+        raise HTTPException(422, str(e))
     except ExtractorError as e:
         log.exception("ExtractorError")
         raise HTTPException(502, f"extraction failed: {e}")

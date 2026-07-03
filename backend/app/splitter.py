@@ -154,8 +154,19 @@ def split_bill(
 
     # 2) Taxes — distributed proportionally within the eligible tax_class basis
     person_tax: dict[str, float] = {p: 0.0 for p in person_ids}
+    # Every item-class actually present on the bill — used as the fallback basis
+    # for a tax the model didn't tag with `applies_to_classes`.
+    all_item_classes = {
+        i.tax_class for s in bill.sections for i in s.items if i.parent_id is None
+    }
     for tax in bill.taxes:
         eligible_classes = set(tax.applies_to_classes)
+        # If the model read a tax line (e.g. CGST/SGST) but didn't say which
+        # item-classes it applies to, treat it as applying to the WHOLE bill
+        # instead of dropping it — otherwise a real tax silently vanishes from
+        # everyone's share and the totals don't reconcile.
+        if not eligible_classes:
+            eligible_classes = set(all_item_classes)
         # Compute basis = sum of all items in eligible classes (across all people, == across the bill)
         basis = 0.0
         for s in bill.sections:

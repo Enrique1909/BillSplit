@@ -44,7 +44,8 @@ function buildMessage(
   const personById = Object.fromEntries(people.map((p) => [p.id, p]));
   const lines: string[] = [];
   const name = bill.restaurant.name?.trim();
-  lines.push(`${name ? `${name} · ` : ""}${inr(split.grand_total)}`);
+  // `*…*` renders bold in WhatsApp — used for the money totals so they pop.
+  lines.push(`${name ? `${name} · ` : ""}*${inr(split.grand_total)}*`);
   // Who-to-pay sits right under the header so it's the first thing people see.
   if (payerName && isLikelyUpiId(upiId)) {
     lines.push(`Pay ${payerName} · ${upiId.trim()}`);
@@ -56,7 +57,7 @@ function buildMessage(
   for (const b of ordered) {
     const p = personById[b.person_id];
     if (!p) continue;
-    lines.push(`${p.name} - ${inr(b.total)}`);
+    lines.push(`${p.name} - *${inr(b.total)}*`);
 
     // Items at the price each person pays (rounded to whole rupees, like the bill).
     let sumItems = 0;

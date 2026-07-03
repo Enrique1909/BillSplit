@@ -120,6 +120,10 @@ class OverloadedError(ExtractorError):
     """Every candidate model returned a transient 'overloaded / high demand' error."""
 
 
+class NotABillError(ExtractorError):
+    """The image was decoded fine but doesn't look like a bill/receipt."""
+
+
 def _load_image(image_path: str | Path) -> Image.Image:
     image_path = Path(image_path)
     suffix = str(image_path).lower().rsplit(".", 1)[-1]
@@ -295,6 +299,18 @@ def extract_bill_with_gemini(image_path: str | Path) -> Bill:
     # Python (Bill.recompute) — section subtotals, reconciliation, delta. We
     # never trust LLM math; small round-off discrepancies auto-correct.
     bill.recompute()
+
+    # Guard against non-bill photos (a selfie, a menu, a random pic). Gemini will
+    # still return well-formed-but-empty JSON for those, which would otherwise
+    # sail through as a ₹0 "bill". If we found no line items AND no total, tell
+    # the user plainly instead of dropping them into an empty review screen.
+    top_items = [i for s in bill.sections for i in s.items if i.parent_id is None]
+    if not top_items and bill.grand_total <= 0:
+        raise NotABillError(
+            "That doesn't look like a bill — I couldn't find any items or a total. "
+            "Please upload a clear, straight-on photo of a printed restaurant bill "
+            "or receipt."
+        )
 
     # Attach a browser-renderable JPEG of the (already normalized) image.
     # This works even when the upload was HEIC, which most browsers can't render directly.
